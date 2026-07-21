@@ -1,0 +1,67 @@
+// OpenAjo indexer schema. Money columns are BigInt (Postgres NUMERIC-safe
+// range for i128 token amounts at 7dp is fine within int8 for realistic
+// values; amounts are raw token units).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Circle {
+  id           Int      @id
+  creator      String
+  token        String
+  contribution BigInt
+  deposit      BigInt
+  size         Int
+  periodSecs   BigInt
+  status       String
+  startedAt    BigInt
+  currentCycle Int
+  updatedAt    DateTime @updatedAt
+  members      Member[]
+  events       Event[]
+}
+
+model Member {
+  circleId         Int
+  address          String
+  joinOrder        Int
+  depositRemaining BigInt
+  received         Boolean
+  defaulted        Boolean
+  circle           Circle @relation(fields: [circleId], references: [id])
+
+  @@id([circleId, address])
+  @@index([address])
+}
+
+model Event {
+  eventId   String  @id
+  circleId  Int?
+  kind      String
+  member    String?
+  amount    BigInt?
+  cycle     Int?
+  txHash    String
+  ledger    Int
+  timestamp DateTime
+  circle    Circle? @relation(fields: [circleId], references: [id])
+
+  @@index([circleId, ledger])
+  @@index([member])
+}
+
+model Reputation {
+  address   String @id
+  completed Int
+  defaulted Int
+}
+
+model Cursor {
+  id         Int @id @default(1)
+  lastLedger Int
+}

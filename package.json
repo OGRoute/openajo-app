@@ -1,10 +1,17 @@
 {
   "name": "openajo-app",
   "private": true,
-  "workspaces": ["packages/*", "apps/*", "indexer"],
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "indexer"
+  ],
   "scripts": {
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.1"
   }
 }
