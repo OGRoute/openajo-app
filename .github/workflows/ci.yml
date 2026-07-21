@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Prisma validate + generate
+        working-directory: indexer
+        run: npx prisma validate && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+
+      - name: SDK tests
+        working-directory: packages/sdk
+        run: npm test
+
+      - name: Typecheck (all workspaces)
+        run: npm run typecheck
+
+      - name: Web production build
+        working-directory: apps/web
+        run: npm run build
+        env:
+          NEXT_PUBLIC_RPC_URL: https://soroban-testnet.stellar.org
+          NEXT_PUBLIC_NETWORK_PASSPHRASE: "Test SDF Network ; September 2015"
+          NEXT_PUBLIC_CIRCLE_CONTRACT_ID: CCLVOHGHDH32GWFAMCEMVHLNJSF6ENVHERYWU2OHUYWWLAOKLVR3HGKS
+          NEXT_PUBLIC_REPUTATION_CONTRACT_ID: CDXPH2PYUTRW7GV57X6CJH3E3JOPROSC23NXPMAXOO3EOBI5UTCB2GTQ
+          NEXT_PUBLIC_TOKEN_ID: CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC
+          NEXT_PUBLIC_READ_SOURCE: GCJDSDNBS5PYOEKUO2PUCE2HRJ6V5IUPC4YBN65XQ4LB5EWKUQBPKHYR
+          NEXT_PUBLIC_INDEXER_URL: http://localhost:8080
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
