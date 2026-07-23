@@ -5,8 +5,10 @@ Stellar, enforced by Soroban smart contracts instead of a collector you have to
 trust. Contracts live in the companion repo
 **[openajo-contract](https://github.com/OGRoute/openajo-contract)**.
 
-📖 **[Documentation](https://ogroute.gitbook.io/ogroute-docs)** — architecture,
-SDK and API reference, local setup, and user guides.
+📖 **Developer docs — [`docs/`](docs/)**: architecture, SDK reference, indexer
+REST API, local setup, and the security model.
+**Protocol docs — [ogroute.gitbook.io](https://ogroute.gitbook.io/ogroute-docs)**:
+how circles rotate, deposits and slashing, reputation, and user guides.
 
 ## What's here
 
