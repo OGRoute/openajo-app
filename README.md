@@ -1,5 +1,9 @@
 # OpenAjo — app
 
+[![CI](https://github.com/OGRoute/openajo-app/actions/workflows/ci.yml/badge.svg)](https://github.com/OGRoute/openajo-app/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Good first issues](https://img.shields.io/github/issues/OGRoute/openajo-app/good%20first%20issue?label=good%20first%20issues)](https://github.com/OGRoute/openajo-app/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
+
 Application layer for **OpenAjo**: rotating savings (ajo / esusu / adashe) on
 Stellar, enforced by Soroban smart contracts instead of a collector you have to
 trust. Contracts live in the companion repo
@@ -62,6 +66,16 @@ switched to **Testnet**, funded via [Friendbot](https://friendbot.stellar.org).
 - `indexer/` → Render (or any Node host) + managed Postgres in the same
   region; set `DATABASE_URL`, RPC vars and `START_LEDGER` (a recent ledger —
   RPC retains ~7 days of events).
+
+## Contributing
+
+Every open issue lists acceptance criteria, the files to touch, and the command
+to verify the change — and none of them need Rust. Start with a
+[`good first issue`](https://github.com/OGRoute/openajo-app/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22),
+comment to claim it, then follow [CONTRIBUTING.md](CONTRIBUTING.md).
+
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security policy](SECURITY.md) — report vulnerabilities privately, never in an issue
 
 ## License
 

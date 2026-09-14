@@ -1,0 +1,48 @@
+name: Bug report
+description: Something in the SDK, indexer or web app does not work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Security issues must not be filed here** — use
+        [private vulnerability reporting](https://github.com/OGRoute/openajo-app/security/advisories/new).
+  - type: dropdown
+    id: workspace
+    attributes:
+      label: Workspace
+      options:
+        - apps/web
+        - indexer
+        - packages/sdk
+        - CI / tooling
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: Include the exact error, e.g. `Error(Contract, #7)` or a stack trace.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Connect Freighter on Testnet
+        2. Open /circles/3
+        3. Click Contribute
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: Node 22, Chrome 139, Freighter 5.x, testnet
