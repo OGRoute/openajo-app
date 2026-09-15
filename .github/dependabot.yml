@@ -8,9 +8,20 @@ updates:
     groups:
       stellar:
         patterns: ["@stellar/*"]
+      # The Prisma CLI and client must share a version; bumping one alone
+      # breaks `prisma generate`.
+      prisma:
+        patterns: ["prisma", "@prisma/*"]
       minor-and-patch:
         update-types: ["minor", "patch"]
     ignore:
+      # Prisma 7 needs a driver-adapter migration, and as of 7.10.0 its CLI
+      # pulls deepmerge-ts and mysql2 releases with open high advisories, which
+      # would fail the audit gate. Revisit when a clean 7.x ships.
+      - dependency-name: prisma
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@prisma/*"
+        update-types: ["version-update:semver-major"]
       # Next 15 and React 19 are a planned migration, not a routine bump.
       - dependency-name: next
         update-types: ["version-update:semver-major"]
