@@ -12,6 +12,6 @@
     "build": "npm run build --workspaces --if-present"
   },
   "devDependencies": {
-    "tsx": "^4.23.1"
+    "tsx": "^4.23.15"
   }
 }

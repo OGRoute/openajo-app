@@ -11,8 +11,8 @@
   "dependencies": {
     "@openajo/sdk": "*",
     "@stellar/freighter-api": "^6.0.1",
-    "@stellar/stellar-sdk": "^17.0.1",
-    "next": "^16.3.5",
+    "@stellar/stellar-sdk": "^17.1.0",
+    "next": "^16.3.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
