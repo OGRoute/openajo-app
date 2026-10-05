@@ -97,6 +97,20 @@ marks members whose deposit could not cover the shortfall as defaulted, pays the
 pot to the next eligible recipient, and advances the cycle. Fails with
 `CircleError.NotDue` if the cycle is not yet due.
 
+## Parameters are checked before signing
+
+`createCircle` applies the same guards as the contract — contribution above
+zero, deposit not negative, at least `MIN_SIZE` (2) members, period at least
+`MIN_PERIOD_SECS` (3600) — and throws `ContractCallError` with
+`CircleError.BadParams` and a message naming the field. The contract would
+reject the same values, but only after the user had been asked to sign, so
+catching it locally saves a wallet prompt and a round trip. Addresses and circle
+ids are shape-checked the same way.
+
+There is deliberately **no** upper bound on `size`: the contract has none yet
+([openajo-contract#1](https://github.com/OGRoute/openajo-contract/issues/1)),
+and the SDK should not enforce limits the chain will not.
+
 ## Error handling
 
 Writes throw the same `ContractCallError` as reads, because the failure surfaces

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { decodeContractError } from "../src/read.js";
+import { decodeContractError } from "../src/errors.js";
 import {
   CIRCLE_ERROR_MESSAGES,
   REPUTATION_ERROR_MESSAGES,
