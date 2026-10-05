@@ -70,13 +70,24 @@ contract change ships and deploys first — see [Contributing](../contributing.m
 `ContractCallError` carries the decoded contract error code.
 
 ```ts
-import { ContractCallError, CircleError, CIRCLE_ERROR_MESSAGES } from "@openajo/sdk";
+import {
+  ContractCallError,
+  CircleError,
+  CIRCLE_ERROR_MESSAGES,
+  ReputationError,
+  REPUTATION_ERROR_MESSAGES,
+} from "@openajo/sdk";
 ```
+
+**Codes are scoped to the contract that raised them.** The two contracts number
+their errors independently, and the low numbers collide: code 3 is `NotFound`
+on `circle` but `NotAdmin` on `reputation`. Decode with the map that matches the
+contract you called, or you will render a confidently wrong message.
 
 | Code | `CircleError` | Message |
 | --- | --- | --- |
-| 1 | `NotInitialized` | — |
-| 2 | `AlreadyInitialized` | — |
+| 1 | `NotInitialized` | The circle contract isn't initialized yet. |
+| 2 | `AlreadyInitialized` | The circle contract is already initialized. |
 | 3 | `NotFound` | That circle doesn't exist. |
 | 4 | `BadStatus` | The circle isn't in the right state for that. |
 | 5 | `AlreadyMember` | You're already a member of this circle. |
@@ -89,8 +100,25 @@ import { ContractCallError, CircleError, CIRCLE_ERROR_MESSAGES } from "@openajo/
 | 12 | `BadParams` | Invalid circle parameters. |
 | 13 | `NotCreator` | Only the creator can do that. |
 
+| Code | `ReputationError` | Message |
+| --- | --- | --- |
+| 1 | `NotInitialized` | The reputation contract isn't initialized yet. |
+| 2 | `AlreadyInitialized` | The reputation contract is already initialized. |
+| 3 | `NotAdmin` | Only the reputation admin can do that. |
+| 4 | `NotReporter` | That contract isn't an authorized reputation reporter. |
+
 Codes 1 and 2 concern contract initialization and should never reach a user of a
-deployed contract; they have no user-facing message.
+deployed contract.
+
+The SDK picks the right map for every call it wraps — `getReputation` decodes
+with `REPUTATION_ERROR_MESSAGES`, everything else with `CIRCLE_ERROR_MESSAGES`.
+If you call a contract directly, decode it yourself and pass the map:
+
+```ts
+import { decodeContractError, REPUTATION_ERROR_MESSAGES } from "@openajo/sdk";
+
+throw decodeContractError(rawSimulationError, REPUTATION_ERROR_MESSAGES);
+```
 
 Branch on `e.code`, never on `e.message`. The messages are user-facing copy —
 they will be reworded, and they are a

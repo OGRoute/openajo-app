@@ -41,8 +41,14 @@ export enum CircleError {
   NotCreator = 13,
 }
 
-/** Human messages for simulation failures, keyed by contract error code. */
+/**
+ * Human messages for `circle` simulation failures, keyed by contract error
+ * code. Codes are per-contract: never decode a `reputation` error with this
+ * map — use REPUTATION_ERROR_MESSAGES.
+ */
 export const CIRCLE_ERROR_MESSAGES: Record<number, string> = {
+  [CircleError.NotInitialized]: "The circle contract isn't initialized yet.",
+  [CircleError.AlreadyInitialized]: "The circle contract is already initialized.",
   [CircleError.NotFound]: "That circle doesn't exist.",
   [CircleError.BadStatus]: "The circle isn't in the right state for that.",
   [CircleError.AlreadyMember]: "You're already a member of this circle.",
@@ -54,6 +60,28 @@ export const CIRCLE_ERROR_MESSAGES: Record<number, string> = {
   [CircleError.IsCreator]: "The creator can't leave — cancel instead.",
   [CircleError.BadParams]: "Invalid circle parameters.",
   [CircleError.NotCreator]: "Only the creator can do that.",
+};
+
+export enum ReputationError {
+  NotInitialized = 1,
+  AlreadyInitialized = 2,
+  NotAdmin = 3,
+  NotReporter = 4,
+}
+
+/**
+ * Human messages for `reputation` simulation failures. The codes overlap with
+ * CircleError numerically but mean different things — code 3 is NotFound on
+ * `circle` and NotAdmin here.
+ */
+export const REPUTATION_ERROR_MESSAGES: Record<number, string> = {
+  [ReputationError.NotInitialized]:
+    "The reputation contract isn't initialized yet.",
+  [ReputationError.AlreadyInitialized]:
+    "The reputation contract is already initialized.",
+  [ReputationError.NotAdmin]: "Only the reputation admin can do that.",
+  [ReputationError.NotReporter]:
+    "That contract isn't an authorized reputation reporter.",
 };
 
 /** Network + contract configuration shared by web and indexer. */
