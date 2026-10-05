@@ -12,7 +12,7 @@
     "@stellar/stellar-sdk": "^17.0.1"
   },
   "devDependencies": {
-    "typescript": "^7.0.2",
-    "vitest": "^5.0.0"
+    "typescript": "^5.5.0",
+    "vitest": "^5.0.3"
   }
 }
