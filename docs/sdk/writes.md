@@ -101,7 +101,9 @@ pot to the next eligible recipient, and advances the cycle. Fails with
 
 Writes throw the same `ContractCallError` as reads, because the failure surfaces
 during simulation — before anything is signed or submitted. In practice this
-means an invalid action costs the user nothing.
+means an invalid action costs the user nothing: the SDK decodes the
+`Error(Contract, #N)` raised inside `prepareTransaction` into the same typed
+error a read would throw, so one error path handles both.
 
 ```ts
 import { ContractCallError, CircleError } from "@openajo/sdk";
