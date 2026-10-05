@@ -35,6 +35,23 @@ const config: OpenAjoConfig = {
 };
 ```
 
+The first call made with a config validates its shape and throws `ConfigError`
+if an id is malformed, if the two contract ids are identical, if `readSource` is
+not an account id, or if `rpcUrl` is not an http(s) URL. Presence checks alone
+let a swapped or mistyped id through, and the failure then surfaces as an opaque
+RPC error far from its cause. Pass a secret seed by mistake and the error says
+so without echoing the key.
+
+```ts
+import { ConfigError, validateConfig } from "@openajo/sdk";
+
+try {
+  validateConfig(config); // optional: fail at boot rather than first call
+} catch (e) {
+  if (e instanceof ConfigError) process.exit(1);
+}
+```
+
 ## Types
 
 Mirrors of the on-chain types:
@@ -91,6 +108,11 @@ decodeEvent, type OpenAjoEvent
 ContractCallError, decodeContractError
 CircleError, CIRCLE_ERROR_MESSAGES
 ReputationError, REPUTATION_ERROR_MESSAGES
+
+// validation
+ConfigError, validateConfig, assertCreateCircleParams
+assertAddress, assertCircleId, assertContractId, assertAccountId
+isAccountId, isContractId, MIN_SIZE, MIN_PERIOD_SECS
 
 // low-level ScVal helpers
 scAddr, scI128, scU32, scU64, fromScVal, decodeCircle, decodeMemberState, decodeReputation

@@ -6,7 +6,14 @@ import {
   rpc,
   xdr,
 } from "@stellar/stellar-sdk";
-import { decodeContractError } from "./read.js";
+import { decodeContractError } from "./errors.js";
+import {
+  assertAddress,
+  assertCircleId,
+  assertContractId,
+  assertCreateCircleParams,
+  validateConfig,
+} from "./validate.js";
 import { scAddr, scI128, scU32, scU64 } from "./scval.js";
 import type { OpenAjoConfig } from "./types.js";
 
@@ -37,6 +44,8 @@ async function invoke(
   args: xdr.ScVal[],
   sign: SignFn,
 ): Promise<WriteResult> {
+  validateConfig(config);
+  assertAddress(sourceAccountId, "source account");
   const server = new rpc.Server(config.rpcUrl);
   const source = await server.getAccount(sourceAccountId);
   const tx = new TransactionBuilder(source, {
@@ -86,6 +95,9 @@ export async function createCircle(
   p: CreateCircleParams,
   sign: SignFn,
 ): Promise<WriteResult> {
+  assertAddress(p.creator, "creator");
+  assertContractId(p.token, "token");
+  assertCreateCircleParams(p);
   return invoke(
     config,
     p.creator,
@@ -108,6 +120,8 @@ export async function joinCircle(
   member: string,
   sign: SignFn,
 ): Promise<WriteResult> {
+  assertCircleId(circleId);
+  assertAddress(member, "member");
   return invoke(config, member, "join", [scU32(circleId), scAddr(member)], sign);
 }
 
@@ -117,6 +131,8 @@ export async function leaveCircle(
   member: string,
   sign: SignFn,
 ): Promise<WriteResult> {
+  assertCircleId(circleId);
+  assertAddress(member, "member");
   return invoke(config, member, "leave", [scU32(circleId), scAddr(member)], sign);
 }
 
@@ -126,6 +142,8 @@ export async function cancelCircle(
   creator: string,
   sign: SignFn,
 ): Promise<WriteResult> {
+  assertCircleId(circleId);
+  assertAddress(creator, "creator");
   return invoke(config, creator, "cancel", [scU32(circleId), scAddr(creator)], sign);
 }
 
@@ -135,6 +153,8 @@ export async function contribute(
   member: string,
   sign: SignFn,
 ): Promise<WriteResult> {
+  assertCircleId(circleId);
+  assertAddress(member, "member");
   return invoke(config, member, "contribute", [scU32(circleId), scAddr(member)], sign);
 }
 
@@ -145,5 +165,7 @@ export async function settleCycle(
   source: string,
   sign: SignFn,
 ): Promise<WriteResult> {
+  assertCircleId(circleId);
+  assertAddress(source, "source account");
   return invoke(config, source, "settle_cycle", [scU32(circleId)], sign);
 }

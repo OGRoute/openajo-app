@@ -13,6 +13,8 @@ import {
   scAddr,
   scU32,
 } from "./scval.js";
+import { ContractCallError, decodeContractError } from "./errors.js";
+import { assertAddress, assertCircleId, validateConfig } from "./validate.js";
 import {
   CIRCLE_ERROR_MESSAGES,
   REPUTATION_ERROR_MESSAGES,
@@ -22,40 +24,6 @@ import {
   type Reputation,
 } from "./types.js";
 
-/** Thrown when a simulation fails with a decoded contract error code. */
-export class ContractCallError extends Error {
-  constructor(
-    public readonly code: number | null,
-    message: string,
-  ) {
-    super(message);
-    this.name = "ContractCallError";
-  }
-}
-
-/**
- * Turn a raw simulation failure into a ContractCallError.
- *
- * Error codes are scoped to the contract that raised them, so the caller must
- * pass the matching message map — the two contracts use overlapping codes for
- * unrelated conditions.
- */
-export function decodeContractError(
-  raw: string,
-  messages: Record<number, string> = CIRCLE_ERROR_MESSAGES,
-): ContractCallError {
-  // Simulation errors carry `Error(Contract, #N)` for contracterror panics.
-  const m = raw.match(/Error\(Contract, #(\d+)\)/);
-  if (m) {
-    const code = Number(m[1]);
-    return new ContractCallError(
-      code,
-      messages[code] ?? `contract error #${code}`,
-    );
-  }
-  return new ContractCallError(null, raw);
-}
-
 async function simulate(
   config: OpenAjoConfig,
   contractId: string,
@@ -63,6 +31,7 @@ async function simulate(
   args: xdr.ScVal[],
   messages: Record<number, string> = CIRCLE_ERROR_MESSAGES,
 ): Promise<xdr.ScVal> {
+  validateConfig(config);
   const server = new rpc.Server(config.rpcUrl);
   const source = await server.getAccount(config.readSource);
   const tx = new TransactionBuilder(source, {
@@ -79,12 +48,14 @@ async function simulate(
 }
 
 export async function getCircle(config: OpenAjoConfig, id: number): Promise<Circle> {
+  assertCircleId(id);
   return decodeCircle(
     await simulate(config, config.circleContractId, "get_circle", [scU32(id)]),
   );
 }
 
 export async function getMembers(config: OpenAjoConfig, id: number): Promise<string[]> {
+  assertCircleId(id);
   const raw = fromScVal<unknown[]>(
     await simulate(config, config.circleContractId, "get_members", [scU32(id)]),
   );
@@ -96,6 +67,8 @@ export async function getMember(
   id: number,
   member: string,
 ): Promise<MemberState> {
+  assertCircleId(id);
+  assertAddress(member, "member");
   return decodeMemberState(
     await simulate(config, config.circleContractId, "get_member", [
       scU32(id),
@@ -108,6 +81,7 @@ export async function getCycleDeadline(
   config: OpenAjoConfig,
   id: number,
 ): Promise<bigint> {
+  assertCircleId(id);
   return fromScVal<bigint>(
     await simulate(config, config.circleContractId, "cycle_deadline", [scU32(id)]),
   );
@@ -125,6 +99,7 @@ export async function getReputation(
   config: OpenAjoConfig,
   member: string,
 ): Promise<Reputation> {
+  assertAddress(member, "member");
   return decodeReputation(
     await simulate(
       config,
