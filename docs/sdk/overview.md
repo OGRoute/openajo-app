@@ -88,7 +88,9 @@ formatUnits, parseUnits
 decodeEvent, type OpenAjoEvent
 
 // errors
-ContractCallError, CircleError, CIRCLE_ERROR_MESSAGES
+ContractCallError, decodeContractError
+CircleError, CIRCLE_ERROR_MESSAGES
+ReputationError, REPUTATION_ERROR_MESSAGES
 
 // low-level ScVal helpers
 scAddr, scI128, scU32, scU64, fromScVal, decodeCircle, decodeMemberState, decodeReputation

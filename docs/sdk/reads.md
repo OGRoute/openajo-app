@@ -107,3 +107,8 @@ Branch on `e.code`, never on `e.message` — the messages are user-facing copy a
 will be reworded. See
 [Amounts, events & errors](amounts-events-errors.md#errors) for the full code
 table.
+
+Error codes belong to the contract that raised them, and the two contracts use
+the same low numbers for different conditions. `getReputation` therefore decodes
+against `ReputationError`, every other read against `CircleError`. Check
+`e.code` against the enum for the contract you called.
