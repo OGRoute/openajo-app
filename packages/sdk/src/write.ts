@@ -6,6 +6,7 @@ import {
   rpc,
   xdr,
 } from "@stellar/stellar-sdk";
+import { decodeContractError } from "./read.js";
 import { scAddr, scI128, scU32, scU64 } from "./scval.js";
 import type { OpenAjoConfig } from "./types.js";
 
@@ -46,8 +47,15 @@ async function invoke(
     .setTimeout(120)
     .build();
 
-  // prepareTransaction simulates, attaches Soroban auth entries and resource fees.
-  const prepared = await server.prepareTransaction(tx);
+  // prepareTransaction simulates, attaches Soroban auth entries and resource
+  // fees. A rejected simulation surfaces as `Error(Contract, #N)` inside the
+  // thrown message; decode it so callers get the same typed error as reads.
+  let prepared: Awaited<ReturnType<typeof server.prepareTransaction>>;
+  try {
+    prepared = await server.prepareTransaction(tx);
+  } catch (e) {
+    throw decodeContractError(e instanceof Error ? e.message : String(e));
+  }
   const signedXdr = await sign(prepared.toXDR(), config.networkPassphrase);
   const signed = TransactionBuilder.fromXDR(signedXdr, config.networkPassphrase);
 

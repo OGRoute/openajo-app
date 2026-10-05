@@ -15,6 +15,7 @@ import {
 } from "./scval.js";
 import {
   CIRCLE_ERROR_MESSAGES,
+  REPUTATION_ERROR_MESSAGES,
   type Circle,
   type MemberState,
   type OpenAjoConfig,
@@ -32,14 +33,24 @@ export class ContractCallError extends Error {
   }
 }
 
-function decodeSimError(raw: string): ContractCallError {
+/**
+ * Turn a raw simulation failure into a ContractCallError.
+ *
+ * Error codes are scoped to the contract that raised them, so the caller must
+ * pass the matching message map — the two contracts use overlapping codes for
+ * unrelated conditions.
+ */
+export function decodeContractError(
+  raw: string,
+  messages: Record<number, string> = CIRCLE_ERROR_MESSAGES,
+): ContractCallError {
   // Simulation errors carry `Error(Contract, #N)` for contracterror panics.
   const m = raw.match(/Error\(Contract, #(\d+)\)/);
   if (m) {
     const code = Number(m[1]);
     return new ContractCallError(
       code,
-      CIRCLE_ERROR_MESSAGES[code] ?? `contract error #${code}`,
+      messages[code] ?? `contract error #${code}`,
     );
   }
   return new ContractCallError(null, raw);
@@ -50,6 +61,7 @@ async function simulate(
   contractId: string,
   method: string,
   args: xdr.ScVal[],
+  messages: Record<number, string> = CIRCLE_ERROR_MESSAGES,
 ): Promise<xdr.ScVal> {
   const server = new rpc.Server(config.rpcUrl);
   const source = await server.getAccount(config.readSource);
@@ -61,7 +73,7 @@ async function simulate(
     .setTimeout(30)
     .build();
   const sim = await server.simulateTransaction(tx);
-  if (rpc.Api.isSimulationError(sim)) throw decodeSimError(sim.error);
+  if (rpc.Api.isSimulationError(sim)) throw decodeContractError(sim.error, messages);
   if (!sim.result) throw new ContractCallError(null, "simulation returned no result");
   return sim.result.retval;
 }
@@ -114,8 +126,12 @@ export async function getReputation(
   member: string,
 ): Promise<Reputation> {
   return decodeReputation(
-    await simulate(config, config.reputationContractId, "get_reputation", [
-      scAddr(member),
-    ]),
+    await simulate(
+      config,
+      config.reputationContractId,
+      "get_reputation",
+      [scAddr(member)],
+      REPUTATION_ERROR_MESSAGES,
+    ),
   );
 }
