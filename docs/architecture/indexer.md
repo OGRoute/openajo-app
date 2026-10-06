@@ -26,11 +26,21 @@ accumulates error and never self-corrects.
 So the indexer does not do that. Events are used only as a **signal about which
 circles changed**:
 
-1. Poll `getEvents` for both contract IDs, starting from the stored cursor.
+1. Poll `getEvents` for both contract IDs, starting from the stored cursor, and
+   **follow RPC's cursor until the range is drained**. `getEvents` returns at
+   most `limit` events per call, so a busy window spans several pages.
 2. Store each raw event, keyed by the RPC event id, so reprocessing is idempotent.
 3. Collect the set of circle ids those events touched.
 4. For each touched circle, **re-read it from the contract** — `get_circle`,
    `get_members`, and `get_member` for each member — and upsert the result.
+
+Paging matters more than it looks. The signal that a circle changed arrives
+*only* in its events: an event dropped because it sat on an unread page leaves
+that circle's row stale indefinitely, until something else happens to touch it.
+Each tick reads at most 20 pages; if a backlog is longer than that, the poller
+logs it and resumes next tick from one ledger before the last event it saw,
+because a single ledger's events can straddle a page boundary and re-reading is
+free.
 
 The database therefore cannot drift from the chain. If the indexer misses a
 window, crashes mid-batch, falls behind, or is replayed from scratch, the next
@@ -80,6 +90,15 @@ not still have in a week.
 
 When `CRANK_SECRET` is set, the indexer periodically looks for circles whose
 current cycle is due and calls `settle_cycle` on them.
+
+A cycle is due on either of the contract's two conditions, which the crank
+mirrors: **every non-defaulted member has paid**, or **the deadline has passed**.
+Both matter. Waiting only for the deadline would leave a circle whose members all
+paid on the first day sitting unpaid for the rest of the period, even though
+anyone could have settled it immediately. The crank counts the contributions
+recorded for the current cycle against the members who have not defaulted; if
+that view is behind the chain, the contract rejects the call with `NotDue` and
+the crank treats it as benign, because the chain is the authority on who paid.
 
 `settle_cycle` takes no caller address and performs no authorization check on
 who invoked it — anyone with a funded account can settle any due circle. The
