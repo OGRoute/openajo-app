@@ -29,8 +29,8 @@ import type { OpenAjoConfig } from "@openajo/sdk";
 const config: OpenAjoConfig = {
   rpcUrl: "https://soroban-testnet.stellar.org",
   networkPassphrase: "Test SDF Network ; September 2015",
-  circleContractId: "CCLVOHGHDH32GWFAMCEMVHLNJSF6ENVHERYWU2OHUYWWLAOKLVR3HGKS",
-  reputationContractId: "CDXPH2PYUTRW7GV57X6CJH3E3JOPROSC23NXPMAXOO3EOBI5UTCB2GTQ",
+  circleContractId: "CA6NVGUC5LOZPOR3B266YXCA2TKXF4SH3362S4HRS5RQU53IDIM5F7FU",
+  reputationContractId: "CD465NGKMGF2E6RGGL5DDMG3RZZFDINUR755FH3XRUZLMSQHTEBJWFD6",
   readSource: "G...", // any funded account id; no secret
 };
 ```

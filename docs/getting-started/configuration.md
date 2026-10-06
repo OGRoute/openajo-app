@@ -9,8 +9,8 @@ every one of them, with working testnet values already filled in.
 | --- | --- | --- |
 | `NEXT_PUBLIC_RPC_URL` | `https://soroban-testnet.stellar.org` | Soroban RPC endpoint |
 | `NEXT_PUBLIC_NETWORK_PASSPHRASE` | `Test SDF Network ; September 2015` | Must match the network Freighter is set to |
-| `NEXT_PUBLIC_CIRCLE_CONTRACT_ID` | `CCLVOHGH…` | Deployed `circle` contract |
-| `NEXT_PUBLIC_REPUTATION_CONTRACT_ID` | `CDXPH2PY…` | Deployed `reputation` contract |
+| `NEXT_PUBLIC_CIRCLE_CONTRACT_ID` | `CA6NVGUC…` | Deployed `circle` contract |
+| `NEXT_PUBLIC_REPUTATION_CONTRACT_ID` | `CD465NGK…` | Deployed `reputation` contract |
 | `NEXT_PUBLIC_TOKEN_ID` | `CDLZFC3S…` | SAC address for the circle asset |
 | `NEXT_PUBLIC_READ_SOURCE` | `GCJDSDNB…` | Any funded account id. Source for read simulations — **no secret** |
 | `NEXT_PUBLIC_INDEXER_URL` | `http://localhost:8080` | Indexer base URL |

@@ -13,8 +13,8 @@ import {
 import { ContractCallError } from "../src/errors.js";
 import { CircleError, type OpenAjoConfig } from "../src/types.js";
 
-const CIRCLE = "CCLVOHGHDH32GWFAMCEMVHLNJSF6ENVHERYWU2OHUYWWLAOKLVR3HGKS";
-const REPUTATION = "CDXPH2PYUTRW7GV57X6CJH3E3JOPROSC23NXPMAXOO3EOBI5UTCB2GTQ";
+const CIRCLE = "CA6NVGUC5LOZPOR3B266YXCA2TKXF4SH3362S4HRS5RQU53IDIM5F7FU";
+const REPUTATION = "CD465NGKMGF2E6RGGL5DDMG3RZZFDINUR755FH3XRUZLMSQHTEBJWFD6";
 
 const config = (over: Partial<OpenAjoConfig> = {}): OpenAjoConfig => ({
   rpcUrl: "https://soroban-testnet.stellar.org",
