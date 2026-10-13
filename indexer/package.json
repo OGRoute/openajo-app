@@ -10,7 +10,7 @@
     "prisma:migrate": "prisma migrate deploy"
   },
   "dependencies": {
-    "@fastify/cors": "^11.3.0",
+    "@fastify/cors": "^11.3.1",
     "@openajo/sdk": "*",
     "@prisma/client": "^5.18.0",
     "@stellar/stellar-sdk": "^17.0.1",
